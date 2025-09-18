@@ -38,7 +38,6 @@ destino_praia = fuzz.trimf(x_destino, [0, 0, 5])
 destino_montanha = fuzz.trimf(x_destino, [0, 5, 10])
 destino_cidade = fuzz.trimf(x_destino, [5, 10, 10])
 
-
 # ------------------------
 # Entrada do usuário
 # ------------------------
@@ -47,7 +46,6 @@ orcamento_input = 25000
 tempo_input = 30
 clima_input = 28
 distancia_input = 25000
-
 
 # ------------------------
 # Fuzzificação
@@ -68,7 +66,6 @@ clima_nivel_quente = fuzz.interp_membership(x_clima, clima_quente, clima_input)
 distancia_nivel_curta = fuzz.interp_membership(x_distancia, distancia_curta, distancia_input)
 distancia_nivel_media = fuzz.interp_membership(x_distancia, distancia_media, distancia_input)
 distancia_nivel_longa = fuzz.interp_membership(x_distancia, distancia_longa, distancia_input)
-
 
 # ------------------------
 # Regras de inferência (adaptadas para incluir distância)
@@ -92,7 +89,6 @@ ativacao_praia_2 = np.fmin(clima_nivel_quente, destino_praia)
 # Regra 5: Se o clima é FRIO, então o destino é MONTANHA.
 ativacao_montanha_2 = np.fmin(clima_nivel_frio, destino_montanha)
 
-
 # ------------------------
 # Agregação das regras de saída
 # ------------------------
@@ -103,13 +99,25 @@ agregado_cidade = ativacao_cidade_1
 
 agregado = np.fmax(agregado_praia, np.fmax(agregado_montanha, agregado_cidade))
 
-
 # ------------------------
 # Defuzzificação (Centroide)
 # ------------------------
 
 destino_final = fuzz.defuzz(x_destino, agregado, 'centroid')
 print(f"Destino recomendado (índice): {destino_final:.2f}")
+
+# ------------------------
+# Mapeamento do índice para texto
+# ------------------------
+if destino_final < 3.5:
+    recomendacao_texto = "Praia"
+elif destino_final < 7.5:
+    recomendacao_texto = "Montanha"
+else:
+    recomendacao_texto = "Cidade"
+
+print(f"A recomendação textual para sua viagem é: {recomendacao_texto}")
+
 
 # ------------------------
 # Gráficos
